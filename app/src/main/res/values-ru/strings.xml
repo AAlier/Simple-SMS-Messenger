@@ -8,6 +8,7 @@
     <string name="message_sending_error">Ваше сообщение для \"%s\" не было отправлено</string>
     <string name="add_person">Добавить участника</string>
     <string name="attachment">Вложение</string>
+    <string name="no_archived_conversations_found">В архиве нет переписок</string>
     <string name="no_conversations_found">Нет сохранённых переписок</string>
     <string name="start_conversation">Начать переписку</string>
     <string name="reply">Ответ</string>

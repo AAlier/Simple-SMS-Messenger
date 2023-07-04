@@ -8,6 +8,7 @@
     <string name="message_sending_error">Your message to \'%s\' has not been sent</string>
     <string name="add_person">Add Person</string>
     <string name="attachment">Attachment</string>
+    <string name="no_archived_conversations_found">No arhived conversations have been found</string>
     <string name="no_conversations_found">No stored conversations have been found</string>
     <string name="start_conversation">Start a conversation</string>
     <string name="reply">Reply</string>
@@ -49,6 +50,8 @@
     <!-- Notifications -->
     <string name="channel_received_sms">Received SMS</string>
     <string name="new_message">New message</string>
+    <string name="archive">Arhive</string>
+    <string name="unarchive">Unarhive</string>
     <string name="mark_as_read">Mark as Read</string>
     <string name="mark_as_unread">Mark as Unread</string>
     <string name="me">Me</string>

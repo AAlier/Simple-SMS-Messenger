@@ -252,7 +252,7 @@ class MainActivity : SimpleActivity() {
     private fun getCachedConversations() {
         ensureBackgroundThread {
             val conversations = try {
-                conversationsDB.getAll().toMutableList() as ArrayList<Conversation>
+                conversationsDB.getAllActive().toMutableList() as ArrayList<Conversation>
             } catch (e: Exception) {
                 ArrayList()
             }
@@ -314,7 +314,7 @@ class MainActivity : SimpleActivity() {
                 }
             }
 
-            val allConversations = conversationsDB.getAll() as ArrayList<Conversation>
+            val allConversations = conversationsDB.getAllActive() as ArrayList<Conversation>
             runOnUiThread {
                 setupConversations(allConversations)
             }
@@ -405,20 +405,16 @@ class MainActivity : SimpleActivity() {
         getOrCreateConversationsAdapter().notifyDataSetChanged()
     }
 
-    private fun handleConversationClick(any: Any) {
-        Intent(this, ThreadActivity::class.java).apply {
-            val conversation = any as Conversation
-            putExtra(THREAD_ID, conversation.threadId)
-            putExtra(THREAD_TITLE, conversation.title)
-            startActivity(this)
-        }
+    private fun handleConversationClick(conversation: Conversation) {
+        startActivity(ThreadActivity.create(this, conversation.threadId, conversation.title))
     }
 
     private fun launchNewConversation() {
         hideKeyboard()
-        Intent(this, NewConversationActivity::class.java).apply {
-            startActivity(this)
-        }
+//        Intent(this, NewConversationActivity::class.java).apply {
+//            startActivity(this)
+//        }
+        startActivity(ArchiveConversationActivity.create(this))
     }
 
     @SuppressLint("NewApi")

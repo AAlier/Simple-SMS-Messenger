@@ -32,7 +32,7 @@ import com.simplemobiletools.smsmessenger.models.Conversation
 import kotlinx.android.synthetic.main.item_conversation.view.*
 
 class ConversationsAdapter(
-    activity: SimpleActivity, recyclerView: MyRecyclerView, onRefresh: () -> Unit, itemClick: (Any) -> Unit
+    activity: SimpleActivity, recyclerView: MyRecyclerView, onRefresh: () -> Unit, itemClick: (Conversation) -> Unit
 ) : MyRecyclerViewListAdapter<Conversation>(activity, recyclerView, ConversationDiffCallback(), itemClick, onRefresh),
     RecyclerViewFastScroller.OnPopupTextUpdate {
     private var fontSize = activity.getTextSize()
@@ -71,6 +71,8 @@ class ConversationsAdapter(
             findItem(R.id.cab_rename_conversation).isVisible = isSingleSelection && isGroupConversation
             findItem(R.id.cab_mark_as_read).isVisible = selectedItems.any { !it.read }
             findItem(R.id.cab_mark_as_unread).isVisible = selectedItems.any { it.read }
+            findItem(R.id.cab_archive).isVisible = selectedItems.none { it.isArchived }
+            findItem(R.id.cab_unarchive).isVisible = selectedItems.all { it.isArchived }
             checkPinBtnVisibility(this)
         }
     }
@@ -92,6 +94,8 @@ class ConversationsAdapter(
             R.id.cab_pin_conversation -> pinConversation(true)
             R.id.cab_unpin_conversation -> pinConversation(false)
             R.id.cab_select_all -> selectAll()
+            R.id.cab_archive -> archiveConversation(true)
+            R.id.cab_unarchive -> archiveConversation(false)
         }
     }
 
@@ -189,6 +193,26 @@ class ConversationsAdapter(
                 deleteConversations()
             }
         }
+    }
+
+    private fun archiveConversation(isArchiveEnabled: Boolean) {
+        val conversations = getSelectedItems()
+        if (conversations.isEmpty()) {
+            return
+        }
+
+        ensureBackgroundThread {
+            conversations.forEach { conversation ->
+                if (isArchiveEnabled) {
+                    activity.archiveConversation(conversation.threadId)
+                } else {
+                    activity.unArchiveConversation(conversation.threadId)
+                }
+            }
+        }
+        val newItems = currentList.toMutableList()
+        newItems.removeAll(conversations)
+        submitList(newItems)
     }
 
     private fun deleteConversations() {
@@ -320,6 +344,11 @@ class ConversationsAdapter(
         submitList(newConversations.toList(), commitCallback)
     }
 
+    fun updateConversations(newConversations: List<Conversation>, commitCallback: (() -> Unit)? = null) {
+        saveRecyclerViewState()
+        submitList(newConversations, commitCallback)
+    }
+
     fun updateDrafts() {
         ensureBackgroundThread {
             val newDrafts = HashMap<Long, String?>()
@@ -366,7 +395,6 @@ class ConversationsAdapter(
             } else {
                 conversation_body_short.alpha = 1f
                 if (conversation.isScheduled) Typeface.BOLD_ITALIC else Typeface.BOLD
-
             }
             conversation_address.setTypeface(null, style)
             conversation_body_short.setTypeface(null, style)
@@ -401,6 +429,10 @@ class ConversationsAdapter(
 
     private fun restoreRecyclerViewState() {
         recyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
+    }
+
+    fun isEmpty(): Boolean {
+        return currentList.isEmpty()
     }
 
     private class ConversationDiffCallback : DiffUtil.ItemCallback<Conversation>() {

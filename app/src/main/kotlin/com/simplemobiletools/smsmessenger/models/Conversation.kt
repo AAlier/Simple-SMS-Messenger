@@ -11,6 +11,7 @@ data class Conversation(
     @ColumnInfo(name = "snippet") var snippet: String,
     @ColumnInfo(name = "date") var date: Int,
     @ColumnInfo(name = "read") var read: Boolean,
+    @ColumnInfo(name = "is_archived") var isArchived: Boolean,
     @ColumnInfo(name = "title") var title: String,
     @ColumnInfo(name = "photo_uri") var photoUri: String,
     @ColumnInfo(name = "is_group_conversation") var isGroupConversation: Boolean,
@@ -28,6 +29,7 @@ data class Conversation(
             return old.snippet == new.snippet &&
                 old.date == new.date &&
                 old.read == new.read &&
+                old.isArchived == new.isArchived &&
                 old.title == new.title &&
                 old.photoUri == new.photoUri &&
                 old.isGroupConversation == new.isGroupConversation &&

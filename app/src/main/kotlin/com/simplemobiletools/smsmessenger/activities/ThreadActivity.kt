@@ -3,6 +3,7 @@ package com.simplemobiletools.smsmessenger.activities
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.BitmapFactory
@@ -77,6 +78,16 @@ import java.io.InputStream
 import java.io.OutputStream
 
 class ThreadActivity : SimpleActivity() {
+
+    companion object {
+        fun create(context: Context, threadId: Long, title: String): Intent {
+            return Intent(context, ThreadActivity::class.java).apply {
+                putExtra(THREAD_ID, threadId)
+                putExtra(THREAD_TITLE, title)
+            }
+        }
+    }
+
     private val MIN_DATE_TIME_DIFF_SECS = 300
 
     private val TYPE_EDIT = 14

@@ -274,7 +274,8 @@ fun Context.getConversations(threadId: Long? = null, privateContacts: ArrayList<
         val photoUri = if (phoneNumbers.size == 1) simpleContactHelper.getPhotoUriFromPhoneNumber(phoneNumbers.first()) else ""
         val isGroupConversation = phoneNumbers.size > 1
         val read = cursor.getIntValue(Threads.READ) == 1
-        val conversation = Conversation(id, snippet, date.toInt(), read, title, photoUri, isGroupConversation, phoneNumbers.first())
+        // By default all conversations are going to be NOT archived
+        val conversation = Conversation(id, snippet, date.toInt(), read, false, title, photoUri, isGroupConversation, phoneNumbers.first())
         conversations.add(conversation)
     }
 
@@ -619,6 +620,14 @@ fun Context.deleteScheduledMessage(messageId: Long) {
     }
 }
 
+fun Context.archiveConversation(threadId: Long) {
+    conversationsDB.markArchived(threadId)
+}
+
+fun Context.unArchiveConversation(threadId: Long) {
+    conversationsDB.markUnArchived(threadId)
+}
+
 fun Context.markMessageRead(id: Long, isMMS: Boolean) {
     val uri = if (isMMS) Mms.CONTENT_URI else Sms.CONTENT_URI
     val contentValues = ContentValues().apply {
@@ -628,7 +637,7 @@ fun Context.markMessageRead(id: Long, isMMS: Boolean) {
     val selection = "${Sms._ID} = ?"
     val selectionArgs = arrayOf(id.toString())
     contentResolver.update(uri, contentValues, selection, selectionArgs)
-    messagesDB.markRead(id)
+    conversationsDB.markRead(id)
 }
 
 fun Context.markThreadMessagesRead(threadId: Long) {
@@ -922,6 +931,7 @@ fun Context.createTemporaryThread(message: Message, threadId: Long = generateRan
         snippet = message.body,
         date = message.date,
         read = true,
+        isArchived = false,
         title = title,
         photoUri = photoUri,
         isGroupConversation = addresses.size > 1,

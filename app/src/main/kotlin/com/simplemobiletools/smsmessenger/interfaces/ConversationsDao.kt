@@ -14,6 +14,12 @@ interface ConversationsDao {
     @Query("SELECT * FROM conversations")
     fun getAll(): List<Conversation>
 
+    @Query("SELECT * FROM conversations WHERE is_archived = 0")
+    fun getAllActive(): List<Conversation>
+
+    @Query("SELECT * FROM conversations WHERE is_archived = 1")
+    fun getAllArchived(): List<Conversation>
+
     @Query("SELECT * FROM conversations WHERE thread_id = :threadId")
     fun getConversationWithThreadId(threadId: Long): Conversation?
 
@@ -28,6 +34,12 @@ interface ConversationsDao {
 
     @Query("UPDATE conversations SET read = 0 WHERE thread_id = :threadId")
     fun markUnread(threadId: Long)
+
+    @Query("UPDATE conversations SET is_archived = 1 WHERE thread_id = :threadId")
+    fun markArchived(threadId: Long)
+
+    @Query("UPDATE conversations SET is_archived = 0 WHERE thread_id = :threadId")
+    fun markUnArchived(threadId: Long)
 
     @Query("DELETE FROM conversations WHERE thread_id = :threadId")
     fun deleteThreadId(threadId: Long)
